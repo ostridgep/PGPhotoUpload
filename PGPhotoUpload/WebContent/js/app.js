@@ -30,45 +30,37 @@ function selPic() {
 
 function uploadPics() {
 	console.log("Ok, going to upload "+images.length+" images.");
-	var defs = [];
+	
 
 	images.forEach(function(i) {
 		console.log('processing '+i);
-		var def = $.Deferred();
+		
 
 		function win(r) {
-			console.log("thing done");
-			if($.trim(r.response) === "0") {
-				console.log("this one failed");
-				def.resolve(0);
-			} else {
-				console.log("this one passed");
-				def.resolve(1);
-			}
+			console.log(r.response);
+			
 		}
 
 		function fail(error) {
 		    console.log("upload error source " + error.source);
-		    console.log("upload error target " + error.target);
-			def.resolve(0);
+		  
 		}
 
-		var uri = encodeURI("http://localhost/testingzone/test.cfm");
+		
+		
+		  var options = new FileUploadOptions();
+		   options.fileKey="file";
+		   options.fileName=i.substr(i.lastIndexOf('/')+1);
+		   //options.mimeType="image/jpeg";
 
-		var options = new FileUploadOptions();
-		options.fileKey="file";
-		options.fileName=i.substr(i.lastIndexOf('/')+1);
-		options.mimeType="image/jpeg";
+		   
+		   options.chunkedMode = false;
 
-		var ft = new FileTransfer();
-		ft.upload(i, uri, win, fail, options);
-		defs.push(def.promise());
+		   var ft = new FileTransfer();
+		  
+		   ft.upload(i, "http://192.168.1.20/FileUpload.php", win, fail, options);
 		
 	});
 
-	$.when.apply($, defs).then(function() {
-		console.log("all things done");
-		console.dir(arguments);
-	});
 
 }
